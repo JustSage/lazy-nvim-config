@@ -1,0 +1,23 @@
+return {
+	checkers = {
+		"stylua",
+		"autopep8",
+		"eslint_d",
+		"fixjson",
+		"isort",
+		"markdownlint",
+		"sqlfluff",
+		"stylelint",
+		"shellcheck",
+		"vint",
+		"prettier",
+		"black",
+		"shellharden",
+		"codespell",
+		"proselint",
+		"gitlint",
+		"prettierd",
+		"shfmt",
+		"jq",
+	},
+}
