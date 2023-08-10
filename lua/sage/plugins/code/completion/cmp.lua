@@ -37,9 +37,10 @@ return {
 			"hrsh7th/cmp-cmdline",
 			"hrsh7th/cmp-nvim-lsp-signature-help",
 			"bydlw98/cmp-env",
-			"dcampos/cmp-emmet-vim",
 			"windwp/nvim-autopairs",
 			"saadparwaiz1/cmp_luasnip",
+			-- "dcampos/cmp-emmet-vim",
+			{ "jackieaskins/cmp-emmet", build = "npm run release" },
 		},
 		config = function()
 			local cmp = require("cmp")
@@ -72,7 +73,7 @@ return {
 							nvim_lsp = "[LSP]",
 							nvim_lua = "[Lua]",
 							luasnip = "[Snip]",
-							emmet_vim = "[Emmet]",
+							emmet = "[Emmet]",
 							buffer = "[BUF]",
 							latex_symbols = "[Latex]",
 							env = "[ENV]",
@@ -125,14 +126,13 @@ return {
 						end
 					end, { "i", "s" }),
 				}),
+
 				preselect = cmp.PreselectMode.None,
 				sources = {
 					{ name = "luasnip",                option = { show_autosnippets = false } },
 					{ name = "nvim_lsp" },
-					{ name = "nvim_lsp_signature_help" },
 					{ name = "nvim_lua" },
-					{ name = "emmet_vim" },
-					{ name = "vim-dadbod-completion" },
+					{ name = "nvim_lsp_signature_help" },
 					{
 						name = "env",
 						option = {
@@ -142,9 +142,11 @@ return {
 						},
 						group_index = 2,
 					},
-					{ name = "orgmode" },
 					{ name = "path" },
 					{ name = "buffer" },
+					{ name = "emmet", option = { max_item_count = 2} },
+					-- { name = "vim-dadbod-completion" },
+					-- { name = "orgmode" },
 				},
 				enabled = function()
 					-- disable completion on prompt buffers

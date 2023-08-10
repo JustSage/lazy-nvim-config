@@ -56,6 +56,7 @@ return {
 				"tsx",
 				"typescript",
 				"vim",
+				"http",
 			},
 			highlight = {
 				enable = true,
