@@ -8,8 +8,16 @@ return {
 		},
 		setup = {
 			tsserver = function(_, opts)
+				local augroup = vim.api.nvim_create_augroup("TypescriptAutoImport", {})
 				local function on_attach(client, bufnr)
 					if client.name == "tsserver" then
+						vim.api.nvim_create_autocmd("BufWritePre", {
+							group = augroup,
+							buffer = bufnr,
+							command = "TypescriptAddMissingImports",
+						})
+						vim.keymap.set("n", "<leader>mp", "<cmd>TypescriptAddMissingImports<CR>",
+							{ buffer = bufnr, desc = "Add missing imports" })
 						--stylua: ignore
 						vim.keymap.set("n", "<leader>co", "<cmd>TypescriptOrganizeImports<CR>",
 							{ buffer = bufnr, desc = "OrganizeImorts" })

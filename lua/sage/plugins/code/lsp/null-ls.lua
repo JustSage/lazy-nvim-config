@@ -22,18 +22,6 @@ return {
 				}),
 
 				-- Web formatter & diagnostics
-				builtins.formatting.prettier.with({
-					filetypes = {
-						"html",
-						-- "json",
-						"css",
-						"javascript",
-						"javascriptreact",
-						"typescript",
-						"typescriptreact",
-					},
-				}),
-
 				builtins.diagnostics.eslint_d.with({
 					diagnostics_format = "[eslint] #{m}\n(#{c})",
 					command = "eslint_d",

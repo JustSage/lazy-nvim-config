@@ -7,5 +7,6 @@ return {
 		"pyright",
 		"bashls",
 		"json-lsp",
+		"tailwindcss",
 	},
 }

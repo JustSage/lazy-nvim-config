@@ -23,6 +23,8 @@ return {
 			require("luasnip.loaders.from_snipmate").lazy_load()
 
 			luasnip.filetype_extend("typescript", { "javascript" })
+			luasnip.filetype_extend("javascript", { "javascriptreact" })
+			luasnip.filetype_extend("javascript", { "html" })
 		end,
 	},
 	{ "andymass/vim-matchup", event = "VeryLazy" },
@@ -37,10 +39,8 @@ return {
 			"hrsh7th/cmp-cmdline",
 			"hrsh7th/cmp-nvim-lsp-signature-help",
 			"bydlw98/cmp-env",
-			"windwp/nvim-autopairs",
 			"saadparwaiz1/cmp_luasnip",
-			-- "dcampos/cmp-emmet-vim",
-			{ "jackieaskins/cmp-emmet", build = "npm run release" },
+			"windwp/nvim-autopairs",
 		},
 		config = function()
 			local cmp = require("cmp")
@@ -109,8 +109,8 @@ return {
 							-- they way you will only jump inside the snippet region
 						elseif luasnip.expand_or_jumpable() then
 							luasnip.expand_or_jump()
-						elseif require("sage.core.functions").has_words_before() then
-							cmp.complete()
+						-- elseif require("sage.core.functions").has_words_before() then
+						-- 	cmp.complete()
 						else
 							fallback()
 						end
@@ -144,9 +144,6 @@ return {
 					},
 					{ name = "path" },
 					{ name = "buffer" },
-					{ name = "emmet", option = { max_item_count = 2} },
-					-- { name = "vim-dadbod-completion" },
-					-- { name = "orgmode" },
 				},
 				enabled = function()
 					-- disable completion on prompt buffers

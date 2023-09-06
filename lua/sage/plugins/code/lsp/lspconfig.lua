@@ -34,46 +34,86 @@ return {
 			{ "folke/neodev.nvim",  opts = { experimental = { pathStrict = true } } },
 			"mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
-			"jose-elias-alvarez/typescript.nvim",
 		},
 		config = function()
 			local util = require("lspconfig/util")
 			local lspconfig = require("lspconfig")
+			local ls = require("luasnip")
 
 			-- remaps on attach to buffer
 			local function on_attach(client, bufnr)
+				local bufopts = { noremap = true, silent = true, buffer = bufnr }
+				vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+
 				client.server_capabilities.documentationFormattingProvider = false
 				client.server_capabilities.documentRangeFormattingProvider = false
-
-				vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-				local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
 				if client.server_capabilities.signatureHelpProvider then
 					vim.keymap.set("n", "<leader>s", vim.lsp.buf.signature_help, { remap = false, silent = true })
 				end
+
 				vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
 				vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
+
+				vim.api.nvim_create_autocmd("InsertLeave", {
+					callback = function()
+						ls.session.current_nodes[vim.api.nvim_get_current_buf()] = nil
+					end,
+					buffer = bufnr,
+				})
 			end
 
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			local cmp_installed, cmp = pcall(require, "cmp_nvim_lsp")
 
-			capabilities.textDocument.completion.completionItem = {
-				documentationFormat = { "markdown", "plaintext" },
-				snippetSupport = true,
-				preselectSupport = true,
-				insertReplaceSupport = true,
-				labelDetailsSupport = true,
-				deprecatedSupport = true,
-				commitCharactersSupport = true,
-				tagSupport = { valueSet = { 1 } },
-				resolveSupport = {
-					properties = {
-						"documentation",
-						"detail",
-						"additionalTextEdits",
+			if cmp_installed then
+				capabilities = vim.tbl_deep_extend("force", capabilities, cmp.default_capabilities())
+			else
+				capabilities = vim.tbl_deep_extend("force", capabilities, {
+					textDocument = {
+						documentationFormat = { "markdown", "plaintext" },
+						snippetSupport = true,
+						preselectSupport = true,
+						insertReplaceSupport = true,
+						deprecatedSupport = true,
+						commitCharactersSupport = true,
+						tagSupport = { valueSet = { 1 } },
+						labelDetailsSupport = true,
+						completion = {
+							resolveSupport = {
+								properties = {
+									"documentation",
+									"detail",
+									"additionalTextEdits",
+									"sortText",
+									"filterText",
+									"insertText",
+									"textEdit",
+									"insertTextFormat",
+									"insertTextMode",
+								},
+							},
+							insertTextModeSupport = {
+								valueSet = {
+									1,
+									2,
+								},
+							},
+							contextSupport = true,
+							insertTextMode = 1,
+							completionList = {
+								itemDefaults = {
+									"commitCharacters",
+									"editRange",
+									"insertTextFormat",
+									"insertTextMode",
+									"data",
+								},
+							},
+						},
 					},
-				},
-			}
+				})
+			end
 
 			local config = {
 				virtual_text = {
@@ -125,16 +165,27 @@ return {
 				on_attach = on_attach,
 				capabilities = capabilities,
 				root_dir = util.root_pattern("package.json", ".git") or vim.fn.expand("%p"),
-				filetype = {
-					"javascript",
-					"javascriptreact",
-					"javascript.jsx",
-					"typescript",
-					"typescriptreact",
-					"typescript.tsx",
-				},
 				cmd = { "typescript-language-server", "--stdio" },
+				filetype = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 				single_file_support = true,
+				-- init_options = {
+				-- 	hostInfo = "neovim",
+				-- 	preferences = {
+				-- 		includeInlayParameterNameHints = "all",
+				-- 		includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+				-- 		includeInlayFunctionParameterTypeHints = true,
+				-- 		includeInlayVariableTypeHints = true,
+				-- 		includeInlayPropertyDeclarationTypeHints = true,
+				-- 		includeInlayFunctionLikeReturnTypeHints = true,
+				-- 		includeInlayEnumMemberValueHints = true,
+				-- 		importModuleSpecifierPreference = "non-relative",
+				-- 	},
+				-- },
+			})
+
+			lspconfig.tailwindcss.setup({
+				on_attach = on_attach,
+				capabilities = capabilities,
 			})
 
 			lspconfig.html.setup({

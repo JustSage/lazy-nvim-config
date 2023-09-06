@@ -224,7 +224,7 @@ map("n", "<leader>hdd", ":lua require'gitsigns'.diffthis('~')<CR>")
 map("n", "<leader>tb", ":Gitsigns toggle_current_line_blame<CR>")
 map("n", "<leader>td", ":Gitsigns toggle_deleted<CR>")
 
-map("n", "<leader>tf", ":NeotestNearest")
+map("n", "<leader>tf", ":NeotestNearest<CR>")
 -- Dadbod
 
 map("n", ",db", ":DBUIToggle<CR>")
@@ -232,8 +232,8 @@ map("n", ",dbb", ":DBUIFindBuffer<CR>")
 map("n", ",dbr", ":DBUIRenameBuffer<CR>")
 map("n", ",dbq", ":DBUILastQueryInfo<CR>")
 
-map("n", "<C-s>", ":SnipRun")
-map("v", "<C-s>", ":SnipRun")
+map("n", "<C-s>", ":SnipRun<CR>")
+map("v", "<C-s>", ":SnipRun<CR>")
 
 -- Treesj (split/join)
 map("n", "<leader>ss", function()
