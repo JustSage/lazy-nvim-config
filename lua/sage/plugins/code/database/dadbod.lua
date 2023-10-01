@@ -11,6 +11,9 @@ return {
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = {
 				"sql",
+				"mongodb",
+				"plsql",
+				"mysql",
 			},
 			command = [[setlocal omnifunc=vim_dadbod_completion#omni]],
 		})

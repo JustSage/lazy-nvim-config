@@ -25,12 +25,10 @@ vim.api.nvim_create_autocmd({ "VimResized" }, {
 	end,
 })
 
---vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
---	group = augroup("ejs"),
---	callback = function()
---		vim.cmd("*.ejs set filetype=html")
---	end,
---})
+-- vim.api.nvim_create_autocmd({ "BufEnter", "BufNewFile" }, {
+-- 	pattern = ".env",
+-- 	command = "set filetype=conf",
+-- })
 
 -- go to last loc when opening a buffer
 vim.api.nvim_create_autocmd("BufReadPost", {

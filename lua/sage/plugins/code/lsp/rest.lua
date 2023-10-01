@@ -39,7 +39,7 @@ return {
 			},
 			-- Jump to request line on run
 			jump_to_request = false,
-			env_file = ".env",
+			env_file = { ".env", ".env.*" },
 			custom_dynamic_variables = {},
 			yank_dry_run = true,
 		})

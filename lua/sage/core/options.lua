@@ -12,7 +12,7 @@ o.autowrite = true                          -- write file when switching buffer.
 o.backup = false                            -- disable backupfile generator.
 o.clipboard = ""                            -- clipboard settings for my os (darwin)
 o.cmdheight = 1                             -- command prompt height.
-o.colorcolumn = "80"
+o.colorcolumn = "100"
 o.completeopt = "menuone,noinsert,noselect" -- complete option menu.
 o.cursorline = false                        -- highlights the line on cursor.
 o.diffopt = "vertical"                      -- opens git diff in vertical split.
@@ -43,9 +43,6 @@ o.undofile = true                           -- disable undofile generator.
 o.updatetime = 50                           -- update interval for gitsigns.
 wo.number = true                            -- show row current line.
 wo.relativenumber = true                    -- show relative numbers above/below current row.
-o.foldcolumn = "1"                          -- '0' is not bad
-o.foldlevel = 99                            -- Using ufo provider need a large value, feel free to decrease the value
-o.foldlevelstart = 99
 o.foldenable = true
 
 o.path:append({ "**" }) -- file paths, searching and ignores

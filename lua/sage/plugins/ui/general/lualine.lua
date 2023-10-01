@@ -84,7 +84,7 @@ return {
 			)
 		end
 
-		function diagnostics_message:update_status(is_focused)
+		function diagnostics_message:update_status()
 			local r, _ = unpack(vim.api.nvim_win_get_cursor(0))
 			local diagnostics = vim.diagnostic.get(0, { lnum = r - 1 })
 			if #diagnostics > 0 then
@@ -94,7 +94,6 @@ return {
 						diagnostics = d
 					end
 				end
-				local icons = { " ", " ", " ", " " }
 				local hl = { self.highlights.error, self.highlights.warn, self.highlights.info, self.highlights.hint }
 				return highlight.component_format_highlight(hl[diag.severity])
 						.. icons[diag.severity]
@@ -119,6 +118,12 @@ return {
 
 		function custom_fname:init(options)
 			custom_fname.super.init(self, options)
+			self.options.symbols = {
+				modified = "",
+				readonly = "",
+				unnamed = "[No Name] ",
+				newfile = "[New] ",
+			}
 			self.status_colors = {
 				saved = highlight.create_component_highlight_group(
 					{ fg = default_status_colors.saved },
@@ -139,8 +144,8 @@ return {
 		function custom_fname:update_status()
 			local data = custom_fname.super.update_status(self)
 			data = highlight.component_format_highlight(
-						vim.bo.modified and self.status_colors.modified or self.status_colors.saved
-					) .. data
+				vim.bo.modified and self.status_colors.modified or self.status_colors.saved
+			) .. data
 			return data
 		end
 

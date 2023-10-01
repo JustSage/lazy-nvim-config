@@ -8,62 +8,70 @@ return {
 			return
 		end
 
-		local builtins = null_ls.builtins
+		local null_ls_utils = require("null-ls.utils")
+
+		-- for conciseness
+		local formatting = null_ls.builtins.formatting   -- to setup formatters
+		local diagnostics = null_ls.builtins.diagnostics -- to setup linters
+		local code_actions = null_ls.builtins.code_actions -- to setup linters
+		local completion = null_ls.builtins.completion   -- to setup linters
 
 		null_ls.setup({
+			root_dir = null_ls_utils.root_pattern(".null-ls-root", "Makefile", ".git", "package.json"),
 			sources = {
 				-- Code actions
-				null_ls.builtins.code_actions.eslint_d,
-				null_ls.builtins.code_actions.shellcheck,
-				null_ls.builtins.completion.spell.with({
+				code_actions.eslint_d,
+				code_actions.shellcheck,
+
+				-- Spelling completion
+				completion.spell.with({
 					filetypes = {
 						"markdown",
 					},
 				}),
 
 				-- Web formatter & diagnostics
-				builtins.diagnostics.eslint_d.with({
-					diagnostics_format = "[eslint] #{m}\n(#{c})",
+				diagnostics.eslint_d.with({
 					command = "eslint_d",
-					args = { "-f", "json", "--stdin", "--stdin-filename", "$FILENAME" },
+					condition = function(utils)
+						-- only enable if root has .eslintrc.js , .eslintrc.cjs or .eslintrc.json
+						return utils.root_has_file({ ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.json" })
+					end,
 				}),
+				formatting.prettierd,
 
 				-- Python formatter & diagnostics
-				builtins.diagnostics.flake8.with({
+				diagnostics.flake8.with({
 					filetypes = { "python" },
 					command = "flake8",
-					args = { "--stdin-display-name", "$FILENAME", "-" },
 				}),
 
-				builtins.formatting.black.with({
+				formatting.black.with({
 					filetypes = { "python" },
 					command = "black",
-					args = { "--quiet", "--fast", "-" },
-				}),
-
-				-- C/CPP formatter
-				builtins.formatting.clang_format.with({
-					filetypes = { "c", "cpp", "cs" },
-					command = "clang-format",
 				}),
 
 				-- Lua
-				builtins.formatting.stylua.with({
+				formatting.stylua.with({
 					filetypes = { "lua" },
 				}),
 
 				-- Shell
-				builtins.formatting.shfmt,
-				builtins.diagnostics.shellcheck.with({
-					diagnostics_format = "#{m} [#{c}]",
-				}),
-			},
-			-- behaviour
-			on_attach = function(client, bufnr)
-				if client.name == "html" then
-					client.server_capabilities.documentFormattingProvider = false
-				end
+				-- formatting.shfmt,
+				-- diagnostics.shellcheck,
+				diagnostics.yamllint,
+				formatting.yamlfmt,
 
+				-- C/CPP formatter
+				formatting.clang_format.with({
+					filetypes = { "c", "cpp", "cs" },
+					command = "clang-format",
+				}),
+				diagnostics.clang_check,
+			},
+
+			-- configure format on save
+			on_attach = function(client, bufnr)
 				if client.supports_method("textDocument/formatting") then
 					-- set format keymap
 					vim.keymap.set("n", "<Leader>fm", function()
@@ -78,7 +86,6 @@ return {
 							group = augroup,
 							buffer = bufnr,
 							callback = function()
-								-- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
 								vim.lsp.buf.format({ bufnr = bufnr })
 							end,
 						})

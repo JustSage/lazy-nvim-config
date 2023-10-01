@@ -2,9 +2,8 @@ return {
 	"nvim-telescope/telescope.nvim",
 	cmd = "Telescope",
 	dependencies = {
-		{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+		{ "nvim-telescope/telescope-fzf-native.nvim",    build = "make" },
 		{ "nvim-telescope/telescope-live-grep-args.nvim" },
-		{ "nvim-telescope/telescope-file-browser.nvim" },
 	},
 	config = function()
 		local present, telescope = pcall(require, "telescope")
@@ -22,6 +21,7 @@ return {
 						["<C-t>"] = require("trouble.providers.telescope").open_with_trouble,
 					},
 					n = {
+						["<C-q>"] = require("telescope.actions").send_to_qflist,
 						["<C-t>"] = require("trouble.providers.telescope").open_with_trouble,
 					},
 				},
@@ -55,8 +55,14 @@ return {
 					preview_cutoff = 120,
 				},
 				file_sorter = require("telescope.sorters").get_fuzzy_file,
-				file_ignore_patterns = { ".git", "node_modules" },
 				generic_sorter = require("telescope.sorters").get_generic_fuzzy_sorter,
+				file_ignore_patterns = {
+					".git",
+					"node_modules",
+					"build",
+					".cache",
+					".DS_Store",
+				},
 				path_display = { "absolute" },
 				winblend = 0,
 				border = {},
@@ -72,10 +78,10 @@ return {
 			},
 			extensions = {
 				fzf = {
-					fuzzy = true, -- false will only do exact matching
-					override_generic_sorter = false, -- override the generic sorter
+					fuzzy = true,              -- false will only do exact matching
+					override_generic_sorter = true, -- override the generic sorter
 					override_file_sorter = true, -- override the file sorter
-					case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+					case_mode = "smart_case",  -- or "ignore_case" or "respect_case"
 					-- the default case_mode is "smart_case"
 				},
 				live_grep_args = {
@@ -89,26 +95,11 @@ return {
 						},
 					},
 				},
-				file_browser = {
-					theme = "ivy",
-					-- disables netrw and use telescope-file-browser in its place
-					hijack_netrw = true,
-					mappings = {
-						["i"] = {
-							-- your custom insert mode mappings
-						},
-						["n"] = {
-							-- your custom normal mode mappings
-						},
-					},
-				},
 			},
 		})
 
 		telescope.load_extension("fzf")
 		telescope.load_extension("live_grep_args")
-		telescope.load_extension("projects")
-		telescope.load_extension("file_browser")
 		telescope.load_extension("harpoon")
 	end,
 }

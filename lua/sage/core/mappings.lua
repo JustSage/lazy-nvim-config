@@ -1,5 +1,3 @@
----@diagnostic disable: param-type-mismatch, missing-parameter
-
 local function map(mode, lhs, rhs, opts) -- keybinding convention
 	local options = { noremap = true, silent = true }
 	if opts then
@@ -43,6 +41,17 @@ map("n", "<leader>/", ":%s/<C-r><C-w>//gI<Left><Left><Left>", { silent = false }
 map("n", "<leader>?", ":%s/\\<<C-r><C-w>\\>//gI<Left><Left><Left>", { silent = false })
 map("n", "<leader>ch", ":!chmod +x %<CR>")
 
+-- Toggle Tailwind LSP
+map("n", "<leader>lt", function()
+	local toggler = require("sage.util.lsp-toggler")
+	local tailwind_id = toggler.get_lsp_id("tailwindcss")
+	if tailwind_id == 0 then
+		toggler.start_server("tailwindcss")
+	else
+		toggler.stop_server(tailwind_id)
+	end
+end, { desc = "Toggle Tailwind LSP Active / Inactive" })
+
 -- Better undo - undos to punctuation
 map("i", ",", ",<c-g>u")
 map("i", ".", ".<c-g>u")
@@ -51,15 +60,6 @@ map("i", "?", "?<c-g>u")
 
 -- Use ESC to turn off search highlighting
 map("n", "<Esc>", ":noh<CR>")
-
--- Harpoon
-map("n", "<leader>m", function()
-	require("harpoon.mark").add_file()
-end)
-map("n", "<C-m>,", function()
-	require("harpoon.ui").toggle_quick_menu()
-end)
-map("n", "<C-m>", ":lua require'sage.core.functions'.nav_to_specific()<CR>")
 
 -- Fugitive
 map("n", "<leader>gs", ":Git<CR>")
@@ -88,7 +88,7 @@ map("n", "<leader>gc", function()
 	require("telescope.builtin").git_commits()
 end)
 map("n", "<leader>ff", function()
-	require("telescope.builtin").find_files({ hidden = true })
+	require("telescope.builtin").find_files({ hidden = true, no_ignore = true })
 end)
 map("n", "<leader>fb", function()
 	require("telescope.builtin").buffers()
@@ -108,12 +108,6 @@ end)
 map("n", "<leader>fG", function()
 	require("telescope").extensions.live_grep_args.live_grep_args({ prompt_title = " < Live Rip Grep >" })
 end)
-map("n", "<leader>fr", function()
-	require("telescope").extensions.file_browser.file_browser({ hidden = true })
-end)
-map("n", "<leader>fp", function()
-	require("telescope").extensions.projects.projects()
-end, { silent = true })
 
 -- Nvim Tree
 map("n", "<leader>n", ":NvimTreeToggle<CR>")
@@ -124,35 +118,6 @@ map("n", "<leader>xw", "<Cmd>TroubleToggle workspace_diagnostics<CR>")
 map("n", "<leader>xd", "<Cmd>TroubleToggle document_diagnostics<CR>")
 map("n", "<leader>xl", "<Cmd>TroubleToggle loclist<CR>")
 map("n", "<leader>xq", "<Cmd>TroubleToggle quickfix<CR>")
-map("n", "<leader>gR", "<Cmd>TroubleToggle lsp_references<CR>")
-
--- Lspsaga
-map("n", "gj", "<Cmd>Lspsaga peek_definition<CR>")
-map("n", "gt", "<Cmd>Lspsaga peek_type_definition<CR>")
-map("n", "gT", "<Cmd>Lspsaga goto_type_definition<CR>")
-map("n", "gd", "<Cmd>Lspsaga goto_definition<CR>")
-map("n", "gr", "<Cmd>Lspsaga lsp_finder<CR>")
-map("n", "K", "<Cmd>Lspsaga hover_doc ++quiet<CR>")
-map("n", "rn", "<Cmd>Lspsaga rename<CR>")
-map("n", "<leader>K", "<Cmd>Lspsaga hover_doc ++keep<CR>")
-map("n", "<leader>rn", "<Cmd>Lspsaga rename ++project<CR>")
-map("n", "<leader>o", "<Cmd>Lspsaga outline<CR>")
-map("n", "<leader>sl", "<Cmd>Lspsaga show_line_diagnostics<CR>")
-map("n", "<leader>sc", "<Cmd>Lspsaga show_cursor_diagnostics<CR>")
-map("n", "<leader>sb", "<Cmd>Lspsaga show_buf_diagnostics<CR>")
-map("v", "<leader>ca", "<Cmd>Lspsaga code_action<CR>")
-map("n", "<leader>ca", "<Cmd>Lspsaga code_action<CR>")
-map("n", "<Leader>ci", "<Cmd>Lspsaga incoming_calls<CR>")
-map("n", "<Leader>co", "<Cmd>Lspsaga outgoing_calls<CR>")
-map("n", "[d", "<Cmd>Lspsaga diagnostic_jump_prev<CR>")
-map("n", "]d", "<Cmd>Lspsaga diagnostic_jump_next<CR>")
--- Only jump to error
-vim.keymap.set("n", "[e", function()
-	require("lspsaga.diagnostic").goto_prev({ severity = vim.diagnostic.severity.ERROR })
-end, { silent = true })
-vim.keymap.set("n", "]e", function()
-	require("lspsaga.diagnostic").goto_next({ severity = vim.diagnostic.severity.ERROR })
-end, { silent = true })
 
 -- DAP
 map("n", "<leader>dc", function()
@@ -183,26 +148,6 @@ map("n", "<leader>dr", function()
 	require("dap").repl.toggle()
 end)
 
--- Folding with nvim-ufo
-map("n", "zR", function()
-	require("ufo").openAllFolds()
-end)
-map("n", "zM", function()
-	require("ufo").closeAllFolds()
-end)
-map("n", "zr", function()
-	require("ufo").openFoldsExceptKinds()
-end)
-map("n", "zm", function()
-	require("ufo").closeFoldsWith()
-end) -- closeAllFolds == closeFoldsWith(0)
-map("n", "K", function()
-	local winid = require("ufo").peekFoldedLinesUnderCursor()
-	if not winid then
-		vim.lsp.buf.hover()
-	end
-end)
-
 map("n", "<leader>sr", function()
 	require("spectre").open()
 end, { desc = "Replace in files (Spectre)" })
@@ -213,7 +158,6 @@ map("n", "[h", "&diff ? '[h' : ':Gitsigns prev_hunk<CR>'", { expr = true })
 map("n", "<leader>hs", ":Gitsigns stage_hunk<CR>")
 map("v", "<leader>hs", ":Gitsigns stage_hunk<CR>")
 map("n", "<leader>hS", ":Gitsigns stage_buffer<CR>")
-map("n", "<leader>hr", ":Gitsigns reset_hunk<CR>")
 map("v", "<leader>hr", ":Gitsigns reset_hunk<CR>")
 map("n", "<leader>hR", ":Gitsigns reset_buffer<CR>")
 map("n", "<leader>hu", ":Gitsigns undo_stage_hunk<CR>")

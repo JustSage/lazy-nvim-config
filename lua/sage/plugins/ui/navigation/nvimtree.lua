@@ -43,7 +43,7 @@ return {
 				vim.keymap.set("n", "[e", api.node.navigate.diagnostics.prev, opts("Prev Diagnostic"))
 				vim.keymap.set("n", "F", api.live_filter.clear, opts("Clean Filter"))
 				vim.keymap.set("n", "f", api.live_filter.start, opts("Filter"))
-				vim.keymap.get("n", "gh", api.tree.toggle_help, opts("Help"))
+				vim.keymap.get("n", "?", api.tree.toggle_help, opts("Help"))
 				vim.keymap.set("n", "gy", api.fs.copy.absolute_path, opts("Copy Absolute Path"))
 				vim.keymap.set("n", "H", api.tree.toggle_hidden_filter, opts("Toggle Dotfiles"))
 				vim.keymap.set("n", "I", api.tree.toggle_gitignore_filter, opts("Toggle Git Ignore"))
@@ -90,7 +90,7 @@ return {
 				sync_root_with_cwd = true,
 				respect_buf_cwd = true,
 				reload_on_bufenter = false,
-				on_attach = "disable",
+				on_attach = "default",
 				remove_keymaps = false,
 				select_prompts = false,
 				view = {
@@ -175,7 +175,7 @@ return {
 								renamed = "➜",
 								deleted = "",
 								untracked = "﯏",
-								ignored = "◌",
+								ignored = "",
 							},
 						},
 					},
@@ -215,7 +215,7 @@ return {
 					dotfiles = false,
 					git_clean = false,
 					no_buffer = false,
-					custom = {},
+					custom = { ".DS_Store" },
 					exclude = {},
 				},
 				filesystem_watchers = {
@@ -225,7 +225,7 @@ return {
 				},
 				git = {
 					enable = true,
-					ignore = true,
+					ignore = false,
 					show_on_dirs = true,
 					show_on_open_dirs = true,
 					timeout = 400,

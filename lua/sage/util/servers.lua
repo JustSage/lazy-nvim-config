@@ -1,12 +1,17 @@
 return {
-	servers = {
-		"lua_ls",
+	mason = {
 		"tsserver",
 		"html",
-		"ccls",
+		"cssls",
+		"tailwindcss",
+		"emmet_ls",
+		"jsonls",
+		"lua_ls",
+		"dockerls",
+		"prismals",
 		"pyright",
 		"bashls",
-		"json-lsp",
-		"tailwindcss",
+		"clangd",
+		"yamlls",
 	},
 }
